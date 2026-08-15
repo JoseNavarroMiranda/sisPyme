@@ -4,16 +4,8 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('auth.login');
 });
-
-Route::view('contact','contact')->name('contact');
-
-Route::view('blog', 'blog')->name('blog');
-
-Route::view('aboutUs', 'aboutUs')->name('aboutUs');
-
-
 
 
 Route::get('/dashboard', function () {
