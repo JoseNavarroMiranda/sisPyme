@@ -2,64 +2,71 @@
 
 namespace App\Http\Controllers;
 
-use App\inventory_Movements;
-use Illuminate\Http\Request;
+use App\Models\inventory_Movements;
+use App\Models\Products;
+use App\Http\Requests\StoreInventoryMovementRequest;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class InventoryMovementsController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $movements = inventory_Movements::with('product')->latest()->get();
+        $products = Products::orderBy('name')->get();
+
+        return view('inventory_movements.index', compact('movements', 'products'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        abort(404);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(StoreInventoryMovementRequest $request)
     {
-        //
+        $data = $request->validated();
+
+        DB::transaction(function () use ($data) {
+            $product = Products::lockForUpdate()->findOrFail($data['product_id']);
+
+            if ($data['type'] === 'out' && $product->stock < $data['quantity']) {
+                abort(422, 'Stock insuficiente para el ajuste');
+            }
+
+            $data['type'] === 'in'
+                ? $product->increment('stock', $data['quantity'])
+                : $product->decrement('stock', $data['quantity']);
+
+            inventory_Movements::create([
+                'type' => $data['type'],
+                'quantity' => $data['quantity'],
+                'description' => $data['description'] ?? 'Ajuste manual de inventario',
+                'product_id' => $product->id,
+                'user_id' => Auth::id(),
+            ]);
+        });
+
+        return redirect()->route('inventory-movements.index')->with('success', 'Ajuste registrado');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(inventory_Movements $inventory_Movements)
+    public function show(inventory_Movements $inventoryMovement)
     {
-        //
+        abort(404);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(inventory_Movements $inventory_Movements)
+    public function edit(inventory_Movements $inventoryMovement)
     {
-        //
+        abort(404);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, inventory_Movements $inventory_Movements)
+    public function update(\Illuminate\Http\Request $request, inventory_Movements $inventoryMovement)
     {
-        //
+        abort(404);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(inventory_Movements $inventory_Movements)
+    public function destroy(inventory_Movements $inventoryMovement)
     {
-        //
+        abort(404);
     }
 }

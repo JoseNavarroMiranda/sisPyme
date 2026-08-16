@@ -2,64 +2,59 @@
 
 namespace App\Http\Controllers;
 
-use App\Categories;
-use Illuminate\Http\Request;
+use App\Models\Categories;
+use App\Http\Requests\StoreCategoryRequest;
+use App\Http\Requests\UpdateCategoryRequest;
+use Illuminate\Database\QueryException;
 
 class CategoriesController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        try {
+                $categories = Categories::latest()->get();
+                return view('categories.index', compact('categories'));
+        } catch (QueryException $e) {
+                return back()->with('error', 'Ocurrio un error al cargar categorias');
+        }
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        return view('categories.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(StoreCategoryRequest $request)
     {
-        //
+        try {
+                Categories::create($request->validated());
+                return redirect()->route('categories.index');
+        } catch (QueryException $e) {
+                return back()->with('error', 'fallo en funcion de crear una categoria');
+        }
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Categories $categories)
+    public function show(Categories $category)
     {
-        //
+        return view('categories.show', compact('category'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Categories $categories)
+    public function edit(Categories $category)
     {
-        //
+        return view('categories.edit', compact('category'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Categories $categories)
+    public function update(UpdateCategoryRequest $request, Categories $category)
     {
-        //
+        $category->update($request->validated());
+
+        return redirect()->route('categories.index')->with('success', 'Categoria actualizada');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Categories $categories)
+    public function destroy(Categories $category)
     {
-        //
+        $category->delete();
+
+        return redirect()->route('categories.index')->with('success', 'Categoria eliminada');
     }
 }
