@@ -1,0 +1,10 @@
+services:
+  app:
+    build: .
+    container_name: laravel-api
+    restart: unless-stopped
+    network_mode: "host"
+    env_file:
+      - .env
+    volumes:
+      - ./storage/app/public:/var/www/html/storage/app/public

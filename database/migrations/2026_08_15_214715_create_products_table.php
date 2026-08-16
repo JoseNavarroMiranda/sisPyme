@@ -18,7 +18,7 @@ return new class extends Migration
             $table->decimal('purchase_price');
             $table->decimal('selling_price');
             $table->integer('stock');
-            $table->string('image_path');
+            $table->string('image_path')->nullable();
             $table->foreignId('category_id')->constrained('categories')->onDelete('cascade');
             $table->foreignId('supplier_id')->constrained('suppliers')->onDelete('cascade');
             $table->timestamps();
