@@ -26,7 +26,7 @@ class StoreCustomerRequest extends FormRequest
             'last_name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:customers,email',
             'phone' => 'required|string|max:20',
-            'rfc' => ['required', 'regex:/^[A-Z&Ñ]{3,4}[0-9]{6}[A-Z0-9]{3}$/i'],
+            'rfc' => 'nullable',
         ];
     }
 }

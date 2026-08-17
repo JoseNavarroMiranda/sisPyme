@@ -24,7 +24,7 @@ class StoreSupplierRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'contact_name' => 'required|string|max:255',
-            'phone' => 'required|string|max:20',
+            'phone' => 'required|max:10',
             'email' => 'required|email|max:255|unique:suppliers,email',
             'suppliers_rfc' => 'required|string|max:13|unique:suppliers,suppliers_rfc',
         ];
